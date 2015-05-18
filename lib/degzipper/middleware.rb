@@ -12,8 +12,12 @@ module Degzipper
       ['gzip', 'deflate'].include? env['HTTP_CONTENT_ENCODING']
     end
 
+    def path_in?(env)
+      !!(env['PATH_INFO'] =~ /api/)
+    end
+
     def call(env)
-      if method_handled?(env) && encoding_handled?(env)
+      if method_handled?(env) && encoding_handled?(env) && path_in?(env)
         extracted = decode(env['rack.input'], env['HTTP_CONTENT_ENCODING'])
 
         env.delete('HTTP_CONTENT_ENCODING')

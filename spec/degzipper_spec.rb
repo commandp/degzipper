@@ -46,7 +46,7 @@ RSpec.describe Degzipper::Middleware do
 
   it 'extracts a gzipped request body' do
     _, _, body = middleware.call(Rack::MockRequest.env_for(
-      '/',
+      '/api',
       method: 'POST',
       input: gzip('hello'),
       'HTTP_CONTENT_ENCODING' => 'gzip'
@@ -63,7 +63,7 @@ RSpec.describe Degzipper::Middleware do
 
   it 'sets the correct content length for UTF-8 content' do
     _, _, body = middleware.call(Rack::MockRequest.env_for(
-      '/',
+      '/api',
       method: 'POST',
       input: gzip('你好'),
       'HTTP_CONTENT_ENCODING' => 'gzip'
@@ -76,5 +76,14 @@ RSpec.describe Degzipper::Middleware do
       'content_encoding' => nil,
       'length' => 6
     )
+  end
+
+  it 'path not in api' do
+    expect{_, _, body = middleware.call(Rack::MockRequest.env_for(
+      '/',
+      method: 'POST',
+      input: gzip('你好'),
+      'HTTP_CONTENT_ENCODING' => 'gzip'
+    ))}.to raise_error
   end
 end
